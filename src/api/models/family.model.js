@@ -31,7 +31,7 @@ const Family = {
   postKey: async (fId) => {
     const query = "INSERT INTO family (fId) values (?)";
     const values = [fId];
-    await executeQuery(query, values);
+    await transaction({query, values});
   },
 
   postDog: async (fId, name, age, kind, meals) => {
@@ -46,7 +46,8 @@ const Family = {
       query = "INSERT INTO dog (fId, name, age, kind, meal1, meal2, meal3) VALUES (?, ?, ?, ?, ?, ?, ?)";
       values = [fId, name, age, kind, meals[0], meals[1], meals[2]];
     }
-    await executeQuery(query, values);
+    await transaction({query, values});
+
     query = "SELECT dog.id as dogId, family.id as groupId FROM dog, family WHERE dog.fId = ? AND family.fId = ?";
     values = [fId, fId];
     const [dogGroupId] = await executeQuery(query, values);
@@ -124,7 +125,7 @@ const Family = {
   postAlbum: async (id, image) => {
     const query = `INSERT INTO album (fId, imageName) VALUES ((SELECT fId FROM family WHERE id=?), ?)`;
     const values = [id, image];
-    await executeQuery(query, values);
+    await transaction({query, values});
   },
 
   getAlbum: async (id) => {

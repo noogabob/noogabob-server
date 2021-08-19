@@ -34,13 +34,13 @@ export const executeQuery = (query, values = []) =>
  * @description 디비 트랜잭션
  * @param  {...any} args
  */
-export const transaction = (...args) =>
+ export const transaction = (...args) =>
   new Promise(async (resolve, reject) => {
     let conn;
     try {
       conn = await pool.getConnection();
       await conn.beginTransaction();
-      args.forEach(async (element) => await element(conn));
+      args.forEach(async (element) => executeQuery(element.query, element.values));
       await conn.commit();
       conn.release();
       resolve();

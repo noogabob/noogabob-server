@@ -27,19 +27,19 @@ const Dog = {
       query = "UPDATE dog SET name=?, age=?, kind=?, meal1=?, meal2=?, meal3=? WHERE id = ?";
       values = [name, age, kind, meals[0], meals[1], meals[2], dogId];
     }
-    await executeQuery(query, values);
+    await transaction({query, values});
   },
 
   feedDog: async (dogId, userId) => {
     const query = "INSERT INTO meal (userId, dogId) VALUES (?,?)";
     const values = [userId, dogId];
-    await executeQuery(query, values);
+    await transaction({query, values});
   },
 
   snackDog: async (dogId, userId) => {
     const query = "INSERT INTO snack (userId, dogId) VALUES (?,?)";
     const values = [userId, dogId];
-    await executeQuery(query, values);
+    await transaction({query, values});
   },
   getLastestMeal: async (dogId) => {
     const query = `(SELECT createdAt FROM meal where dogId = ?) 

@@ -1,4 +1,4 @@
-import { executeQuery } from "./pool";
+import { executeQuery, transaction } from "./pool";
 
 const User = {
   findByKey: async (fId, userId) => {
@@ -10,7 +10,7 @@ const User = {
   postUser: async (key, name, role) => {
     let query = "INSERT INTO user (fId, name, role) VALUES (?,?,?)";
     let values = [key, name, role];
-    await executeQuery(query, values);
+    await transaction({query, values});
 
     query = "SELECT id FROM user WHERE fId = (SELECT fId FROM family WHERE fId = ?) AND name = ? AND role = ?";
     values = [key, name, role];
@@ -28,14 +28,14 @@ const User = {
   updateUser: async (userId, name, role, key) => {
     const query = "UPDATE user SET name = ?, role = ? WHERE (id = ? AND fId = (SELECT fId FROM family WHERE fId = ?))";
     const values = [name, role, userId, key];
-    const user = await executeQuery(query, values);
+    await transaction({query, values});
     return user;
   },
 
   deleteUser: async (userId, key) => {
     const query = "DELETE FROM user WHERE (id = ? AND fId = (SELECT fId FROM family WHERE fId = ?)) ";
     const values = [userId, key];
-    await executeQuery(query, values);
+    await transaction({query, values});
   },
 };
 
